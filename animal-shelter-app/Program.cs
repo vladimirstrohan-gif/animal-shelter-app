@@ -1,5 +1,7 @@
 using animal_shelter_app.Data;
+using animal_shelter_app.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -30,10 +32,48 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen();
-builder.Services.AddOpenApi();
+
 
 var app = builder.Build();
+
+if (args.Contains("--create-admin"))
+{
+    using var scope = app.Services.CreateScope();
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    // Проверяем, есть ли уже админ с таким email
+    string adminEmail = "admin@animalshelter.com";
+    if (!context.Users.Any(u => u.Email == adminEmail))
+    {
+        var passwordHasher = new PasswordHasher<User>();
+
+        var adminUser = new User
+        {
+            Email = adminEmail,
+            FullName = "System Admin",
+            Role = UserRole.Admin,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        // Хэшируем надежный пароль
+        adminUser.PasswordHash = passwordHasher.HashPassword(adminUser, "AdminPassword123!");
+
+        context.Users.Add(adminUser);
+        context.SaveChanges();
+
+        Console.WriteLine("\n[SUCCESS] Администратор успешно создан!");
+        Console.WriteLine($"Email: {adminEmail}");
+        Console.WriteLine("Пароль: AdminPassword123!\n");
+    }
+    else
+    {
+        Console.WriteLine("\n[INFO] Администратор с таким email уже существует в базе.\n");
+    }
+
+    return; // Завершаем работу программы после создания, чтобы сервер не запускался в режиме веб-приложения
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
