@@ -14,7 +14,9 @@
         public string Species { get; set; } = string.Empty; 
         public string? Breed { get; set; }                  
         public int Age { get; set; }                        
-        public string Description { get; set; } = string.Empty; 
+        public string Description { get; set; } = string.Empty;
+        public string? ImageUrl { get; set; }               // Ссылка на фото питомца
+        public string City { get; set; } = string.Empty;
 
         public AnimalStatus Status { get; set; } = AnimalStatus.InShelter;
 
