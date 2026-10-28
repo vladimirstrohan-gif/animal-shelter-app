@@ -28,7 +28,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
         };
     });
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowGladPet", policy =>
+    {
+        policy.WithOrigins("https://адрес-сайта-напарника.azurewebsites.net", "http://localhost:3000") // Укажите реальный адрес фронтенда
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -100,7 +108,7 @@ if (args.Contains("--create-admin"))
 
     return; // Завершаем работу программы после создания, чтобы сервер не запускался в режиме веб-приложения
 }
-
+app.UseCors("AllowGladPet");
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
