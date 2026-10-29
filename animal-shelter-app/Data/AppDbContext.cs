@@ -9,6 +9,7 @@ namespace animal_shelter_app.Data
 
         public DbSet<User> Users { get; set; }
         public DbSet<Animal> Animals { get; set; }
+        public DbSet<Article> Articles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
