@@ -1,4 +1,5 @@
 ﻿using animal_shelter_app.Models;
+using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
 namespace animal_shelter_app.DTOs
@@ -7,7 +8,7 @@ namespace animal_shelter_app.DTOs
     {
         [Required(ErrorMessage = "Кличка питомца обязательна.")]
         [StringLength(30, ErrorMessage = "Имя не должно превышать 30 символов.")]
-        [MinLength(3,ErrorMessage ="Минимум 3 символа.")]
+        [MinLength(3, ErrorMessage = "Минимум 3 символа.")]
         public string Name { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Вид животного обязателен.")]
@@ -21,7 +22,8 @@ namespace animal_shelter_app.DTOs
         [StringLength(500, ErrorMessage = "Описание слишком длинное (максимум 500 символов).")]
         public string Description { get; set; } = string.Empty;
 
-        public string? ImageUrl { get; set; }
+        // Поле для загрузки файла картинки с фронтенда
+        public IFormFile? ImageFile { get; set; }
 
         [Required(ErrorMessage = "Город обязателен.")]
         public string City { get; set; } = string.Empty;
