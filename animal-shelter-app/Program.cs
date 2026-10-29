@@ -35,21 +35,24 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-// 3. Настройка CORS
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+    ?? new[]
+    {
+        "https://gladpet-web-app-hecufnfgf3g5ggcd.swedencentral-01.azurewebsites.net",
+        "http://volodymyrstrohan-001-site1.dtempurl.com",
+        "https://volodymyrstrohan-001-site1.dtempurl.com",
+        "http://localhost:3000",
+        "http://localhost:5173"
+    };
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowGladPet", policy =>
     {
-        policy.WithOrigins(
-    "https://gladpet-web-app-hecufnfgf3g5ggcd.swedencentral-01.azurewebsites.net",
-    "http://volodymyrstrohan-001-site1.dtempurl.com",
-    "https://volodymyrstrohan-001-site1.dtempurl.com", // <-- Добавьте HTTPS
-    "http://localhost:3000",
-    "http://localhost:5173"
-)
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();
+        policy.WithOrigins(allowedOrigins)
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
@@ -84,9 +87,6 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 var app = builder.Build();
-
-// ВАЖНО: CORS должен быть в самом начале конвейера запросов
-app.UseCors("AllowGladPet");
 
 if (args.Contains("--create-admin"))
 {
@@ -134,6 +134,9 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 
+app.UseRouting();
+app.UseCors("AllowGladPet");
+
 // Аутентификация и авторизация
 app.UseAuthentication();
 app.UseAuthorization();
@@ -141,11 +144,3 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-
-
-
-
-
-
-
-
